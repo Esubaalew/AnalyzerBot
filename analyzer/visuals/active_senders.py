@@ -56,10 +56,9 @@ def visualize_pie_chart(data: dict, top_n: int = 10):
     plt.pie(message_counts, labels=senders, autopct='%1.1f%%', startangle=140, colors=plt.cm.tab20.colors)
     plt.title(f'Proportion of Messages Sent by Top {top_n} Senders')
     plt.axis('equal')
-    # Generate a unique file name
+
     file_name = f"bar_chart_{uuid.uuid4()}.png"
 
-    # Save the plot as an image file
     plt.savefig(file_name)
 
     plt.close()

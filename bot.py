@@ -36,6 +36,10 @@ from analyzer.visuals.active_senders import (visualize_bar_chart,
                                              visualize_line__chart,
                                              visualize_vertical_chart
                                              )
+from analyzer.visuals.active_weekdays import (
+    visualize_most_active_weekdays_bar,
+
+    visualize_most_active_weekdays_pie)
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -69,10 +73,7 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 InlineKeyboardButton("MonthsByYear", callback_data='most_active_months_by_year')
             ]
 
-            # Group the buttons into rows
             keyboard = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
-
-            # Create InlineKeyboardMarkup with the arranged buttons
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
             context.user_data['file_path'] = file_path
@@ -137,7 +138,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 for index, sender in enumerate(senders, start=1):
                     senders_text += f"{index}. {sender['sender']} - Messages: {sender['messages']}\n"
                 keyboard = [
-                    [InlineKeyboardButton("Visualize", callback_data='visualize')],
+                    [InlineKeyboardButton("Visualize Senders", callback_data='visualize_senders')],
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 query.message.reply_text(senders_text, reply_markup=reply_markup, )
@@ -254,7 +255,12 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 weekdays_text = "Most active weekdays:\n\n"
                 for weekday, count in active_weekdays:
                     weekdays_text += f"{weekday}: {count} Messages\n"
-                query.message.reply_text(weekdays_text)
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Weekdays", callback_data='visualize_weekdays')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(weekdays_text, reply_markup=reply_markup, )
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -330,7 +336,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
 
-    elif query.data == 'visualize':
+    elif query.data == 'visualize_senders':
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
         file_path = context.user_data.get('file_path')
         if file_path:
@@ -364,6 +370,28 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
 
+    elif query.data == 'visualize_weekdays':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_most_active_weekdays_bar(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='The most active weekdays bar chart.')
+                os.remove(bar_chart_file)
+                pie_chart_file = visualize_most_active_weekdays_pie(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'),
+                    caption='The most active weekdays pie chart.')
+                os.remove(pie_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
 
     else:
         query.message.reply_text("Invalid option selected.")
