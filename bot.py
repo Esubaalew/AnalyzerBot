@@ -72,7 +72,33 @@ from analyzer.visuals.active_years import *
 
 
 def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
+    user_first_name = update.effective_user.first_name
+
+    tools_list = [
+        "1. Chat Info",
+        "2. Oldest Message",
+        "3. Latest Message",
+        "4. Rank Senders",
+        "5. Rank Forwarders",
+        "6. Forward Sources",
+        "7. Rank Repliers",
+        "8. Rank Editors",
+        "9. Common Words",
+        "10. Active Hours",
+        "11. Active Weekdays",
+        "12. Active Months",
+        "13. Active Years",
+        "14. Months All Time",
+        "15. Months By Year"
+    ]
+
+    tools_message = "\n".join(tools_list)
+
+    update.message.reply_text(
+        f'Hello {user_first_name}, I am Liyu Bot, a Telegram chat analytics bot.\n'
+        f'You can use the following tools to analyze and visualize the Telegram groups:\n'
+        f'{tools_message}'
+    )
 
 
 def unknown_command(update: Update, context: CallbackContext) -> None:
