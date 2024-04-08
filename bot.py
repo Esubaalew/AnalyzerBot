@@ -15,7 +15,8 @@ from analyzer.tools import (
     get_oldest_message,
     get_latest_message,
     get_senders,
-    get_forwarders
+    get_forwarders, count_forwarded_messages,
+    get_forward_sources
 )
 
 
@@ -37,7 +38,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("Oldest Message", callback_data='oldest_message')],
                 [InlineKeyboardButton("Latest Message", callback_data='latest_message')],
                 [InlineKeyboardButton("RankSenders", callback_data='rank_senders')],
-                [InlineKeyboardButton("RankForwarders", callback_data='rank_forwarders')]
+                [InlineKeyboardButton("RankForwarders", callback_data='rank_forwarders')],
+                [InlineKeyboardButton("ForwardSources", callback_data='forward_sources')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -112,11 +114,27 @@ def button_press(update: Update, context: CallbackContext) -> None:
         if file_path:
             data = load_json(file_path)
             if data:
+                all_forwarders = count_forwarded_messages(data)
                 forwarders = get_forwarders(data)
                 forwarders_text = "Rank of Forwarders:\n"
-                for index, forwarder in enumerate(forwarders, start=1):
-                    forwarders_text += f"{index}. {forwarder['forwarder']} - Forwarded Messages: {forwarder['forwarded_messages']}\n"
-                query.message.reply_text(forwarders_text)
+                for index, (forwarder, count) in enumerate(forwarders.items(), start=1):
+                    forwarders_text += f"{index}. {forwarder} - Forwarded Messages: {count}\n"
+                reply_text = f"Total forwarded messages: {all_forwarders}\n\n{forwarders_text}"
+                query.message.reply_text(reply_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'forward_sources':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                forward_sources = get_forward_sources(data)
+                forward_sources_text = "Rank of Forward Sources:\n"
+                for index, (forward_source, count) in enumerate(forward_sources.items(), start=1):
+                    forward_sources_text += f"{index}. {forward_source} - Forwarded Messages: {count}\n"
+                query.message.reply_text(forward_sources_text)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
