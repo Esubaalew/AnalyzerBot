@@ -65,6 +65,8 @@ from analyzer.visuals.editors import (
     visualize_line_chart_editors
 )
 
+from analyzer.visuals.forward_sources import *
+
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
@@ -200,7 +202,12 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 forward_sources_text = "Rank of Forward Sources:\n"
                 for index, (forward_source, count) in enumerate(forward_sources.items(), start=1):
                     forward_sources_text += f"{index}. {forward_source} - Forwarded Messages: {count}\n"
-                query.message.reply_text(forward_sources_text)
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Sources", callback_data='visualize_sources')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(forward_sources_text, reply_markup=reply_markup, )
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -558,6 +565,42 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     photo=open(area_chart_file, 'rb'),
                     caption='The most active editors area chart.')
                 os.remove(area_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'visualize_sources':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_bar_chart_sources(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='Top forward sources bar chart based on the number of messages they sent.')
+                os.remove(bar_chart_file)
+
+                pie_chart_file = visualize_pie_chart_sources(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'),
+                    caption='Proportion of messages forward sources  using a pie chart.')
+                os.remove(pie_chart_file)
+
+                area_chart_file = visualize_area_chart_sources(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(area_chart_file, 'rb'),
+                    caption='Area chart ')
+                os.remove(area_chart_file)
+
+                line_chart_file = visualize_line_chart_sources(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'), )
+                os.remove(line_chart_file)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:

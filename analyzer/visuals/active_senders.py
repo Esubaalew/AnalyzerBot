@@ -32,7 +32,6 @@ def visualize_bar_chart(data: dict, top_n: int = 10):
     # Save the plot as an image file
     plt.savefig(file_name)
 
-
     plt.close()
 
     return file_name
@@ -152,10 +151,9 @@ def visualize_area_chart(data: dict, top_n: int = 10):
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)
-    # Generate a unique file name
+
     file_name = f"bar_chart_{uuid.uuid4()}.png"
 
-    # Save the plot as an image file
     plt.savefig(file_name)
 
     plt.close()
