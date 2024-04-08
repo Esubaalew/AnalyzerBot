@@ -30,6 +30,12 @@ from analyzer.tools import (
     get_most_active_months_all_time,
     get_most_active_months_by_year
 )
+from analyzer.visuals.active_senders import (visualize_bar_chart,
+                                             visualize_pie_chart,
+                                             visualize_area_chart,
+                                             visualize_line__chart,
+                                             visualize_vertical_chart
+                                             )
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -45,23 +51,28 @@ def handle_document(update: Update, context: CallbackContext) -> None:
         data = load_json(file_path)
         if data:
 
-            keyboard = [
-                [InlineKeyboardButton("Chat Information", callback_data='chat_info')],
-                [InlineKeyboardButton("Oldest Message", callback_data='oldest_message')],
-                [InlineKeyboardButton("Latest Message", callback_data='latest_message')],
-                [InlineKeyboardButton("RankSenders", callback_data='rank_senders')],
-                [InlineKeyboardButton("RankForwarders", callback_data='rank_forwarders')],
-                [InlineKeyboardButton("ForwardSources", callback_data='forward_sources')],
-                [InlineKeyboardButton("RankRepliers", callback_data='rank_repliers')],
-                [InlineKeyboardButton("RankEditors", callback_data='rank_editors')],
-                [InlineKeyboardButton("MostCommonWords", callback_data='most_common_words')],
-                [InlineKeyboardButton("MostActiveHours", callback_data='most_active_hours')],
-                [InlineKeyboardButton("MostActiveWeekdays", callback_data='most_active_weekdays')],
-                [InlineKeyboardButton("MostActiveMonths", callback_data='most_active_months')],
-                [InlineKeyboardButton("MostActiveYear", callback_data='most_active_year')],
-                [InlineKeyboardButton("MostActiveMonthsAllTime", callback_data='most_active_months_all_time')],
-                [InlineKeyboardButton("MostActiveMonthsByYear", callback_data='most_active_months_by_year')]
+            buttons = [
+                InlineKeyboardButton("ChatInfo", callback_data='chat_info'),
+                InlineKeyboardButton("OldestMessage", callback_data='oldest_message'),
+                InlineKeyboardButton("LatestMessage", callback_data='latest_message'),
+                InlineKeyboardButton("RankSenders", callback_data='rank_senders'),
+                InlineKeyboardButton("RankForwarders", callback_data='rank_forwarders'),
+                InlineKeyboardButton("ForwardSources", callback_data='forward_sources'),
+                InlineKeyboardButton("RankRepliers", callback_data='rank_repliers'),
+                InlineKeyboardButton("RankEditors", callback_data='rank_editors'),
+                InlineKeyboardButton("CommonWords", callback_data='most_common_words'),
+                InlineKeyboardButton("ActiveHours", callback_data='most_active_hours'),
+                InlineKeyboardButton("ActiveWeekdays", callback_data='most_active_weekdays'),
+                InlineKeyboardButton("ActiveMonths", callback_data='most_active_months'),
+                InlineKeyboardButton("ActiveYears", callback_data='most_active_year'),
+                InlineKeyboardButton("MonthsAllTime", callback_data='most_active_months_all_time'),
+                InlineKeyboardButton("MonthsByYear", callback_data='most_active_months_by_year')
             ]
+
+            # Group the buttons into rows
+            keyboard = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
+
+            # Create InlineKeyboardMarkup with the arranged buttons
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
             context.user_data['file_path'] = file_path
@@ -74,6 +85,7 @@ def handle_document(update: Update, context: CallbackContext) -> None:
 def button_press(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
+    file_names = []
     if query.data == 'chat_info':
         file_path = context.user_data.get('file_path')
         if file_path:
@@ -124,7 +136,11 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 senders_text = "Rank of Senders:\n"
                 for index, sender in enumerate(senders, start=1):
                     senders_text += f"{index}. {sender['sender']} - Messages: {sender['messages']}\n"
-                query.message.reply_text(senders_text)
+                keyboard = [
+                    [InlineKeyboardButton("Visualize", callback_data='visualize')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(senders_text, reply_markup=reply_markup, )
 
             else:
                 query.message.reply_text("Failed to process the JSON file.")
@@ -314,7 +330,39 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
 
-
+    elif query.data == 'visualize':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_bar_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='Top 10 most active users based on the number of messages they sent.')
+                os.remove(bar_chart_file)
+                pie_chart_file = visualize_pie_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'),
+                    caption='Proportion of messages sent by each sender using a pie chart.')
+                os.remove(pie_chart_file)
+                area_chart_file = visualize_area_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(area_chart_file, 'rb'),
+                    caption='Area chart ')
+                os.remove(area_chart_file)
+                line_chart_file = visualize_line__chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'), )
+                os.remove(line_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
 
 
     else:
