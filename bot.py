@@ -1,7 +1,6 @@
 import os
 import time
 from datetime import datetime, timedelta
-
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Updater,
@@ -68,7 +67,7 @@ from analyzer.visuals.editors import (
 from analyzer.visuals.forward_sources import *
 from analyzer.visuals.common_words import visualize_most_common_words
 from analyzer.visuals.active_hours import *
-
+from analyzer.visuals.active_months import *
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
@@ -299,8 +298,6 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 query.message.reply_text(hours_text, reply_markup=reply_markup, )
 
-
-
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -337,7 +334,12 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 months_text = "Most active months:\n\n"
                 for month, count in active_months:
                     months_text += f"{month}: {count} Messages\n"
-                query.message.reply_text(months_text)
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Months", callback_data='visualize_months')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(months_text, reply_markup=reply_markup, )
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -371,7 +373,12 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 months_text = "Most active months of all time:\n"
                 for index, month_info in enumerate(active_months_list, start=1):
                     months_text += f"{index}. {month_info['name']}: {month_info['messages']}\n"
-                query.message.reply_text(months_text)
+
+                keyboard = [
+                    [InlineKeyboardButton("Visualize AllTimeMonths", callback_data='visualize_months_all')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(months_text, reply_markup=reply_markup,)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -389,8 +396,11 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     response_text += f"\n{year}:\n"
                     for index, month_info in enumerate(months, start=1):
                         response_text += f"    {index}. {month_info['name']}: {month_info['messages']}\n"
-
-                query.message.reply_text(response_text)
+                keyboard = [
+                    [InlineKeyboardButton("Visualize MonthsByYear", callback_data='visualize_months_year')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(response_text, reply_markup=reply_markup)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -645,14 +655,90 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 context.bot.send_photo(
                     chat_id=update.effective_chat.id,
                     photo=open(bar_chart_file, 'rb'),
-                    caption='Active hours.')
+                    caption='Active hours bar chart.')
                 os.remove(bar_chart_file)
 
                 line_chart_file = visualize_line_hours(data)
                 context.bot.send_photo(
                     chat_id=update.effective_chat.id,
-                    photo=open(line_chart_file, 'rb'), )
+                    photo=open(line_chart_file, 'rb'), caption='Active hours line chart.')
                 os.remove(line_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'visualize_months':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                months_trend_file = visualize_most_active_months_trend(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(months_trend_file, 'rb'), caption='Active months trend chart.')
+                os.remove(months_trend_file)
+
+                top_10_months_file = visualize_top_10_most_active_months(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(top_10_months_file, 'rb'), caption='Top 10 most active months.')
+                os.remove(top_10_months_file)
+
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'visualize_months_year':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+
+                months_per_year_file = visualize_most_active_months_by_year(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(months_per_year_file, 'rb'), caption='Active months by year.')
+                os.remove(months_per_year_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'visualize_months_all':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+
+                bar_chart_file = visualize_bar_chart_months(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='Active months bar chart.')
+                os.remove(bar_chart_file)
+
+                line_chart_file = visualize_line_chart_months(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'), caption='Active months line chart.')
+                os.remove(line_chart_file)
+
+                pie_chart_file = visualize_pie_chart_months(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'), caption='Active months pie chart.')
+                os.remove(pie_chart_file)
+
+                area_chart_file = visualize_area_chart_months(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(area_chart_file, 'rb'), caption='Active months area chart.')
+                os.remove(area_chart_file)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
