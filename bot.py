@@ -14,7 +14,8 @@ from analyzer.tools import (
     chat_info,
     get_oldest_message,
     get_latest_message,
-    get_senders
+    get_senders,
+    get_forwarders
 )
 
 
@@ -36,6 +37,7 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("Oldest Message", callback_data='oldest_message')],
                 [InlineKeyboardButton("Latest Message", callback_data='latest_message')],
                 [InlineKeyboardButton("RankSenders", callback_data='rank_senders')],
+                [InlineKeyboardButton("RankForwarders", callback_data='rank_forwarders')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -101,6 +103,20 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     senders_text += f"{index}. {sender['sender']} - Messages: {sender['messages']}\n"
                 query.message.reply_text(senders_text)
 
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'rank_forwarders':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                forwarders = get_forwarders(data)
+                forwarders_text = "Rank of Forwarders:\n"
+                for index, forwarder in enumerate(forwarders, start=1):
+                    forwarders_text += f"{index}. {forwarder['forwarder']} - Forwarded Messages: {forwarder['forwarded_messages']}\n"
+                query.message.reply_text(forwarders_text)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
