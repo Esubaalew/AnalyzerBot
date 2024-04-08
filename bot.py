@@ -75,35 +75,44 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
 
 
+def unknown_command(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Sorry, I didn't understand that command.")
+
+
+def unknown_text(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Sorry, I didn't understand that text.")
+
+
 def filter_photos(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("I guess this pic is good. Please send a JSON file instead.")
 
 
 def filter_videos(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("What is this video? Please send a JSON file instead.")
 
 
 def filter_audios(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("Audio,  yeah? Please send a JSON file instead.")
+
 
 def filter_voice(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("This might be your voice ah? Please send a JSON file instead.")
 
 
 def filter_location(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("Please send a JSON file instead, I guess this is your location.")
 
 
 def filter_contact(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("OH!! is this your contact? Please send a JSON file instead.")
 
 
 def filter_sticker(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("What is this sticker? Please send a JSON file instead.")
 
 
 def filter_poll(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("Please send a JSON file instead.")
+    update.message.reply_text("A poll? Please send a JSON file instead.")
 
 
 def handle_document(update: Update, context: CallbackContext) -> None:
@@ -825,6 +834,8 @@ def main() -> None:
     dispatcher.add_handler(MessageHandler(Filters.sticker, filter_sticker))
     dispatcher.add_handler(MessageHandler(Filters.poll, filter_poll))
     dispatcher.add_handler(CallbackQueryHandler(button_press))
+    dispatcher.add_handler(MessageHandler(Filters.command, unknown_command))
+    dispatcher.add_handler(MessageHandler(Filters.text, unknown_text))
     updater.start_polling()
     updater.idle()
 
