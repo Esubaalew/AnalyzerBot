@@ -149,7 +149,11 @@ def filter_poll(update: Update, context: CallbackContext) -> None:
 
 def handle_document(update: Update, context: CallbackContext) -> None:
     document = update.message.document
+    if document.file_size > 20971520:  # 20 MB, Telegram's file size limit
+        update.message.reply_text("The file size exceeds the limit. Please upload a file smaller than 20 MB.")
+        return
     if document.mime_type == 'application/json':
+
         file_id = document.file_id
         file = context.bot.get_file(file_id)
         file_path = file.download()
