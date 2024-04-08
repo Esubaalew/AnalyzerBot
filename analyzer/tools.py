@@ -635,7 +635,7 @@ def get_most_active_months_all_time(data: dict) -> list:
         month_num = message_date.strftime('%m')
         active_months[month_names[month_num]] += 1
 
-    active_months_list = [{'name': month, 'messages': count} for month, count in active_months.items()]
+    active_months_list = sorted([{'name': month, 'messages': count} for month, count in active_months.items()], key=lambda x: x['messages'], reverse=True)
 
     return active_months_list
 

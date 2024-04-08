@@ -26,7 +26,8 @@ from analyzer.tools import (
     get_most_active_hours,
     get_most_active_weekdays,
     get_most_active_months,
-    get_most_active_year
+    get_most_active_year,
+get_most_active_months_all_time
 )
 
 
@@ -56,7 +57,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("MostActiveHours", callback_data='most_active_hours')],
                 [InlineKeyboardButton("MostActiveWeekdays", callback_data='most_active_weekdays')],
                 [InlineKeyboardButton("MostActiveMonths", callback_data='most_active_months')],
-                [InlineKeyboardButton("MostActiveYear", callback_data='most_active_year')]
+                [InlineKeyboardButton("MostActiveYear", callback_data='most_active_year')],
+                [InlineKeyboardButton("MostActiveMonthsAllTime", callback_data='most_active_months_all_time')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -274,6 +276,23 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
             query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'most_active_months_all_time':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                active_months_list = get_most_active_months_all_time(data)
+
+                months_text = "Most active months of all time:\n"
+                for index, month_info in enumerate(active_months_list, start=1):
+                    months_text += f"{index}. {month_info['name']}: {month_info['messages']}\n"
+                query.message.reply_text(months_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
 
 
     else:
