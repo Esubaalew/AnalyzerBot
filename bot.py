@@ -101,6 +101,12 @@ def start(update: Update, context: CallbackContext) -> None:
     )
 
 
+def help(update: Update, context: CallbackContext) -> None:
+    message = "Go to your any  telegram group on your desktop and export the chat history as a JSON file. " \
+              "Then send the JSON file to the bot and choose the functionality you want to perform."
+    update.message.reply_text(message)
+
+
 def unknown_command(update: Update, context: CallbackContext) -> None:
     update.message.reply_text("Sorry, I didn't understand that command.")
 
@@ -850,6 +856,7 @@ def main() -> None:
     updater = Updater(os.getenv('TOKEN'))
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
+    dispatcher.add_handler(CommandHandler('help', help))
     dispatcher.add_handler(MessageHandler(Filters.document, handle_document))
     dispatcher.add_handler(MessageHandler(Filters.photo, filter_photos))
     dispatcher.add_handler(MessageHandler(Filters.video, filter_videos))
@@ -860,6 +867,7 @@ def main() -> None:
     dispatcher.add_handler(MessageHandler(Filters.sticker, filter_sticker))
     dispatcher.add_handler(MessageHandler(Filters.poll, filter_poll))
     dispatcher.add_handler(CallbackQueryHandler(button_press))
+
     dispatcher.add_handler(MessageHandler(Filters.command, unknown_command))
     dispatcher.add_handler(MessageHandler(Filters.text, unknown_text))
     updater.start_polling()
