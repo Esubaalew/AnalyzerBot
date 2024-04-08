@@ -66,6 +66,7 @@ from analyzer.visuals.editors import (
 )
 
 from analyzer.visuals.forward_sources import *
+from analyzer.visuals.common_words import visualize_most_common_words
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -265,7 +266,13 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 words_text += "{:<3} {:<15} {:<10}\n".format("No.", "Word", "Occurrence")
                 for index, word_info in enumerate(most_common_words_list, start=1):
                     words_text += f"{index:<3} {word_info['word']:<15} {word_info['occurrence']:<10}\n"
-                query.message.reply_text(words_text)
+
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Words", callback_data='visualize_words')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(words_text, reply_markup=reply_markup)
+
 
             else:
                 query.message.reply_text("Failed to process the JSON file.")
@@ -601,6 +608,23 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     chat_id=update.effective_chat.id,
                     photo=open(line_chart_file, 'rb'), )
                 os.remove(line_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'visualize_words':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_most_common_words(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='Top 10 most common words in the chat.')
+                os.remove(bar_chart_file)
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
