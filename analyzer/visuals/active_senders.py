@@ -3,7 +3,7 @@ import uuid
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from analyzer.tools import get_most_active_users, get_senders, load_json
+from analyzer.tools import get_most_active_users, get_senders
 
 
 def visualize_bar_chart(data: dict, top_n: int = 10):

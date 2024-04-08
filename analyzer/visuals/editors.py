@@ -3,7 +3,7 @@ import uuid
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from analyzer.tools import get_editors, load_json
+from analyzer.tools import get_editors
 
 
 def visualize_bar_chart_editors(data: dict, top_n: int = 10):

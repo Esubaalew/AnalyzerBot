@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 
 import seaborn as sns
 
-from analyzer.tools import get_forwarders, load_json
+from analyzer.tools import get_forwarders
 
 
 def visualize_forwarders_bar_chart(data: dict, top_n: int = 10):

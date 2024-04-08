@@ -68,6 +68,8 @@ from analyzer.visuals.forward_sources import *
 from analyzer.visuals.common_words import visualize_most_common_words
 from analyzer.visuals.active_hours import *
 from analyzer.visuals.active_months import *
+from analyzer.visuals.active_years import *
+
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
@@ -357,7 +359,13 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 years_text = "Most active years:\n\n"
                 for year, count in active_years:
                     years_text += f"{year}: {count} Messages\n"
-                query.message.reply_text(years_text)
+
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Years", callback_data='visualize_years')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+
+                query.message.reply_text(years_text, reply_markup=reply_markup,)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -378,7 +386,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     [InlineKeyboardButton("Visualize AllTimeMonths", callback_data='visualize_months_all')],
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
-                query.message.reply_text(months_text, reply_markup=reply_markup,)
+                query.message.reply_text(months_text, reply_markup=reply_markup, )
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -739,6 +747,30 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     chat_id=update.effective_chat.id,
                     photo=open(area_chart_file, 'rb'), caption='Active months area chart.')
                 os.remove(area_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'visualize_years':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+
+                trend_chart_year = visualize_message_trend_over_year(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(trend_chart_year, 'rb'),
+                    caption='Active years bar chart.')
+                os.remove(trend_chart_year)
+
+                trend_bar_file = visualize_message_trend_over_year_bar(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(trend_bar_file, 'rb'), caption='Active years bar chart.')
+                os.remove(trend_bar_file)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
