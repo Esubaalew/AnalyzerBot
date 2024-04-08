@@ -24,7 +24,9 @@ from analyzer.tools import (
     get_editors, count_edited_messages,
     get_most_common_words,
     get_most_active_hours,
-get_most_active_weekdays
+    get_most_active_weekdays,
+    get_most_active_months,
+    get_most_active_year
 )
 
 
@@ -52,7 +54,9 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("RankEditors", callback_data='rank_editors')],
                 [InlineKeyboardButton("MostCommonWords", callback_data='most_common_words')],
                 [InlineKeyboardButton("MostActiveHours", callback_data='most_active_hours')],
-                [InlineKeyboardButton("MostActiveWeekdays", callback_data='most_active_weekdays')]
+                [InlineKeyboardButton("MostActiveWeekdays", callback_data='most_active_weekdays')],
+                [InlineKeyboardButton("MostActiveMonths", callback_data='most_active_months')],
+                [InlineKeyboardButton("MostActiveYear", callback_data='most_active_year')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -235,6 +239,42 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
             query.message.reply_text("No JSON file found.")
+    elif query.data == 'most_active_months':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                active_months = get_most_active_months(data)
+
+                active_months = active_months[:100]
+
+                months_text = "Most active months:\n\n"
+                for month, count in active_months:
+                    months_text += f"{month}: {count} Messages\n"
+                query.message.reply_text(months_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'most_active_year':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                active_years = get_most_active_year(data)
+
+                active_years = active_years[:100]
+
+                years_text = "Most active years:\n\n"
+                for year, count in active_years:
+                    years_text += f"{year}: {count} Messages\n"
+                query.message.reply_text(years_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
 
     else:
         query.message.reply_text("Invalid option selected.")
