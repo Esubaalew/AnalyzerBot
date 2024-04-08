@@ -41,6 +41,14 @@ from analyzer.visuals.active_weekdays import (
 
     visualize_most_active_weekdays_pie)
 
+from analyzer.visuals.forwarders import (
+    visualize_forwarders_vertical_bar_chart,
+    visualize_forwarders_bar_chart,
+    visualize_forwarders_line_chart,
+    visualize_forwarders_pie_chart,
+    visualize_forwarders_area_chart
+)
+
 
 def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
@@ -54,7 +62,6 @@ def handle_document(update: Update, context: CallbackContext) -> None:
         file_path = file.download()
         data = load_json(file_path)
         if data:
-
             buttons = [
                 InlineKeyboardButton("ChatInfo", callback_data='chat_info'),
                 InlineKeyboardButton("OldestMessage", callback_data='oldest_message'),
@@ -158,7 +165,12 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 for index, (forwarder, count) in enumerate(forwarders.items(), start=1):
                     forwarders_text += f"{index}. {forwarder} - Forwarded Messages: {count}\n"
                 reply_text = f"Total forwarded messages: {all_forwarders}\n\n{forwarders_text}"
-                query.message.reply_text(reply_text)
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Forwarders", callback_data='visualize_forwarders')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(reply_text, reply_markup=reply_markup, )
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -392,7 +404,48 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
             query.message.reply_text("No JSON file found.")
+    elif query.data == 'visualize_forwarders':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_forwarders_bar_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='The most active forwarders bar chart.')
+                os.remove(bar_chart_file)
+                pie_chart_file = visualize_forwarders_pie_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'),
+                    caption='The most active forwarders pie chart.')
+                os.remove(pie_chart_file)
+                line_chart_file = visualize_forwarders_line_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'),
+                    caption='The most active forwarders line chart.')
+                os.remove(line_chart_file)
 
+                vertical_chart_file = visualize_forwarders_vertical_bar_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(vertical_chart_file, 'rb'),
+                    caption='The most active forwarders vertical bar chart.')
+                os.remove(vertical_chart_file)
+
+                area_chart_file = visualize_forwarders_area_chart(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(area_chart_file, 'rb'),
+                    caption='The most active forwarders area chart.')
+                os.remove(area_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
     else:
         query.message.reply_text("Invalid option selected.")
 
