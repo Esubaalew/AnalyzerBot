@@ -75,6 +75,37 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text(f'Hello {update.effective_user.first_name}, I am  telegram chat analytics bot')
 
 
+def filter_photos(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
+def filter_videos(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
+def filter_audios(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+def filter_voice(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
+def filter_location(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
+def filter_contact(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
+def filter_sticker(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
+def filter_poll(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file instead.")
+
+
 def handle_document(update: Update, context: CallbackContext) -> None:
     document = update.message.document
     if document.mime_type == 'application/json':
@@ -365,7 +396,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
 
-                query.message.reply_text(years_text, reply_markup=reply_markup,)
+                query.message.reply_text(years_text, reply_markup=reply_markup, )
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -785,6 +816,14 @@ def main() -> None:
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(MessageHandler(Filters.document, handle_document))
+    dispatcher.add_handler(MessageHandler(Filters.photo, filter_photos))
+    dispatcher.add_handler(MessageHandler(Filters.video, filter_videos))
+    dispatcher.add_handler(MessageHandler(Filters.audio, filter_audios))
+    dispatcher.add_handler(MessageHandler(Filters.voice, filter_voice))
+    dispatcher.add_handler(MessageHandler(Filters.location, filter_location))
+    dispatcher.add_handler(MessageHandler(Filters.contact, filter_contact))
+    dispatcher.add_handler(MessageHandler(Filters.sticker, filter_sticker))
+    dispatcher.add_handler(MessageHandler(Filters.poll, filter_poll))
     dispatcher.add_handler(CallbackQueryHandler(button_press))
     updater.start_polling()
     updater.idle()
