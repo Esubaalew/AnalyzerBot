@@ -27,7 +27,8 @@ from analyzer.tools import (
     get_most_active_weekdays,
     get_most_active_months,
     get_most_active_year,
-get_most_active_months_all_time
+    get_most_active_months_all_time,
+    get_most_active_months_by_year
 )
 
 
@@ -58,7 +59,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("MostActiveWeekdays", callback_data='most_active_weekdays')],
                 [InlineKeyboardButton("MostActiveMonths", callback_data='most_active_months')],
                 [InlineKeyboardButton("MostActiveYear", callback_data='most_active_year')],
-                [InlineKeyboardButton("MostActiveMonthsAllTime", callback_data='most_active_months_all_time')]
+                [InlineKeyboardButton("MostActiveMonthsAllTime", callback_data='most_active_months_all_time')],
+                [InlineKeyboardButton("MostActiveMonthsByYear", callback_data='most_active_months_by_year')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -292,6 +294,26 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
             query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'most_active_months_by_year':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                active_months_by_year = get_most_active_months_by_year(data)
+
+                response_text = "Most active months by year:\n"
+                for year, months in active_months_by_year.items():
+                    response_text += f"\n{year}:\n"
+                    for index, month_info in enumerate(months, start=1):
+                        response_text += f"    {index}. {month_info['name']}: {month_info['messages']}\n"
+
+                query.message.reply_text(response_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
 
 
 
