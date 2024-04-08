@@ -233,7 +233,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         if file_path:
             data = load_json(file_path)
             if data:
-                senders = get_senders(data)
+                senders = get_senders(data)[:100]
                 senders_text = "Rank of Senders:\n"
                 for index, sender in enumerate(senders, start=1):
                     senders_text += f"{index}. {sender['sender']} - Messages: {sender['messages']}\n"
@@ -253,7 +253,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             data = load_json(file_path)
             if data:
                 all_forwarders = count_forwarded_messages(data)
-                forwarders = get_forwarders(data)
+                forwarders = get_forwarders(data)[:100]
                 forwarders_text = "Rank of Forwarders:\n"
                 for index, (forwarder, count) in enumerate(forwarders.items(), start=1):
                     forwarders_text += f"{index}. {forwarder} - Forwarded Messages: {count}\n"
@@ -273,7 +273,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         if file_path:
             data = load_json(file_path)
             if data:
-                forward_sources = get_forward_sources(data)
+                forward_sources = get_forward_sources(data)[:100]
                 forward_sources_text = "Rank of Forward Sources:\n"
                 for index, (forward_source, count) in enumerate(forward_sources.items(), start=1):
                     forward_sources_text += f"{index}. {forward_source} - Forwarded Messages: {count}\n"
@@ -293,7 +293,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             data = load_json(file_path)
             if data:
                 total_repliers = count_replies(data)
-                repliers_ranking = get_repliers(data)
+                repliers_ranking = get_repliers(data)[:100]
                 repliers_text = f"Total replies: {total_repliers}\n\nRank of Repliers:\n"
                 for index, (replier, count) in enumerate(repliers_ranking.items(), start=1):
                     repliers_text += f"{index}. {replier} - Replies Count: {count}\n"
@@ -314,7 +314,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             data = load_json(file_path)
             if data:
                 total_edited_messages = count_edited_messages(data)
-                editors_ranking = get_editors(data)
+                editors_ranking = get_editors(data)[:100]
                 editors_text = f"Total edited messages: {total_edited_messages}\n\nRank of Editors:\n"
                 for index, (editor, count) in enumerate(editors_ranking.items(), start=1):
                     editors_text += f"{index}. {editor} - Edited Messages Count: {count}\n"
@@ -358,7 +358,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         if file_path:
             data = load_json(file_path)
             if data:
-                active_hours = get_most_active_hours(data)
+                active_hours = get_most_active_hours(data)[:100]
                 hours, counts = zip(*active_hours)
                 ethiopian_hours = [(datetime.strptime(str(hour), '%H') + timedelta(hours=3)).strftime('%I %p') for hour
                                    in hours]
