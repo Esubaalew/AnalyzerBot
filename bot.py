@@ -1,4 +1,5 @@
 import os
+import time
 from datetime import datetime, timedelta
 
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
@@ -47,6 +48,21 @@ from analyzer.visuals.forwarders import (
     visualize_forwarders_line_chart,
     visualize_forwarders_pie_chart,
     visualize_forwarders_area_chart
+)
+
+from analyzer.visuals.repliers import (
+    visualize_bar_chart_repliers,
+    visualize_vertical_bar_chart_repliers,
+    visualize_pie_chart_repliers,
+    visualize_area_chart_repliers,
+    visualize_line_chart_repliers
+)
+from analyzer.visuals.editors import (
+    visualize_pie_chart_editors,
+    visualize_vertical_bar_chart_editors,
+    visualize_bar_chart_editors,
+    visualize_area_chart_editors,
+    visualize_line_chart_editors
 )
 
 
@@ -199,7 +215,13 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 repliers_text = f"Total replies: {total_repliers}\n\nRank of Repliers:\n"
                 for index, (replier, count) in enumerate(repliers_ranking.items(), start=1):
                     repliers_text += f"{index}. {replier} - Replies Count: {count}\n"
-                query.message.reply_text(repliers_text)
+
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Repliers", callback_data='visualize_repliers')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(repliers_text, reply_markup=reply_markup, )
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -214,7 +236,13 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 editors_text = f"Total edited messages: {total_edited_messages}\n\nRank of Editors:\n"
                 for index, (editor, count) in enumerate(editors_ranking.items(), start=1):
                     editors_text += f"{index}. {editor} - Edited Messages Count: {count}\n"
-                query.message.reply_text(editors_text)
+
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Editors", callback_data='visualize_editors')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(editors_text, reply_markup=reply_markup)
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
@@ -441,6 +469,94 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     chat_id=update.effective_chat.id,
                     photo=open(area_chart_file, 'rb'),
                     caption='The most active forwarders area chart.')
+                os.remove(area_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'visualize_repliers':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_bar_chart_repliers(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='The most active repliers bar chart.')
+                os.remove(bar_chart_file)
+
+                pie_chart_file = visualize_pie_chart_repliers(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'),
+                    caption='The most active repliers pie chart.')
+                os.remove(pie_chart_file)
+
+                line_chart_file = visualize_line_chart_repliers(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'),
+                    caption='The most active repliers line chart.')
+                os.remove(line_chart_file)
+
+                vertical_chart_file = visualize_vertical_bar_chart_repliers(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(vertical_chart_file, 'rb'),
+                    caption='The most active repliers vertical bar chart.')
+                os.remove(vertical_chart_file)
+
+                area_chart_file = visualize_area_chart_repliers(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(area_chart_file, 'rb'),
+                    caption='The most active repliers area chart.')
+                os.remove(area_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'visualize_editors':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_bar_chart_editors(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='The most active editors bar chart.')
+                os.remove(bar_chart_file)
+
+                pie_chart_file = visualize_pie_chart_editors(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(pie_chart_file, 'rb'),
+                    caption='The most active editors pie chart.')
+                os.remove(pie_chart_file)
+
+                line_chart_file = visualize_line_chart_editors(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'),
+                    caption='The most active editors line chart.')
+                os.remove(line_chart_file)
+
+                vertical_chart_file = visualize_vertical_bar_chart_editors(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(vertical_chart_file, 'rb'),
+                    caption='The most active editors vertical bar chart.')
+                os.remove(vertical_chart_file)
+
+                area_chart_file = visualize_area_chart_editors(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(area_chart_file, 'rb'),
+                    caption='The most active editors area chart.')
                 os.remove(area_chart_file)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
