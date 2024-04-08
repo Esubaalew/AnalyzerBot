@@ -1,8 +1,8 @@
 import os
-from telegram import Update, Document, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
-from analyzer.tools import load_json, chat_info
+from analyzer.tools import load_json, chat_info, get_oldest_message
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -20,6 +20,7 @@ def handle_document(update: Update, context: CallbackContext) -> None:
 
             keyboard = [
                 [InlineKeyboardButton("Chat Information", callback_data='chat_info')],
+                [InlineKeyboardButton("Oldest Message", callback_data='oldest_message')],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -46,6 +47,18 @@ def button_press(update: Update, context: CallbackContext) -> None:
                     f"Messages Count: {chat_info_dict['messages_count']}"
                 )
                 query.message.reply_text(chat_info_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'oldest_message':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                oldest_date = get_oldest_message(data)['date']
+                formatted_date = f"{oldest_date['day']}/{oldest_date['month']}/{oldest_date['year']}"
+                query.message.reply_text(f"The oldest message in the chat was sent on {formatted_date}.")
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
