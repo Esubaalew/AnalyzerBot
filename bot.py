@@ -1,4 +1,6 @@
 import os
+from datetime import datetime, timedelta
+
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Updater,
@@ -19,7 +21,9 @@ from analyzer.tools import (
     count_forwarded_messages,
     get_forward_sources,
     count_replies, get_repliers,
-    get_editors, count_edited_messages
+    get_editors, count_edited_messages,
+    get_most_common_words,
+    get_most_active_hours
 )
 
 
@@ -45,6 +49,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("ForwardSources", callback_data='forward_sources')],
                 [InlineKeyboardButton("RankRepliers", callback_data='rank_repliers')],
                 [InlineKeyboardButton("RankEditors", callback_data='rank_editors')],
+                [InlineKeyboardButton("MostCommonWords", callback_data='most_common_words')],
+                [InlineKeyboardButton("MostActiveHours", callback_data='most_active_hours')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -173,6 +179,58 @@ def button_press(update: Update, context: CallbackContext) -> None:
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
+            query.message.reply_text("No JSON file found.")
+
+    elif query.data == 'most_common_words':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                most_common_words_list = get_most_common_words(data)
+                words_text = "Top 10 most common words:\n"
+                words_text += "{:<3} {:<15} {:<10}\n".format("No.", "Word", "Occurrence")
+                for index, word_info in enumerate(most_common_words_list, start=1):
+                    words_text += f"{index:<3} {word_info['word']:<15} {word_info['occurrence']:<10}\n"
+                query.message.reply_text(words_text)
+
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
+
+    elif query.data == 'most_active_hours':
+
+        file_path = context.user_data.get('file_path')
+
+        if file_path:
+
+            data = load_json(file_path)
+
+            if data:
+
+                active_hours = get_most_active_hours(data)
+
+                hours, counts = zip(*active_hours)
+
+
+
+                ethiopian_hours = [(datetime.strptime(str(hour), '%H') + timedelta(hours=3)).strftime('%I %p') for hour
+                                   in hours]
+
+                hours_text = "Most active hours:\n"
+
+                for rank, (hour, count) in enumerate(zip(ethiopian_hours, counts), start=1):
+                    hours_text += f"{rank}. {hour}: {count} Messages\n"
+
+                query.message.reply_text(hours_text)
+
+            else:
+
+                query.message.reply_text("Failed to process the JSON file.")
+
+        else:
+
             query.message.reply_text("No JSON file found.")
 
     else:
