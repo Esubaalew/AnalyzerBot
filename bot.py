@@ -18,7 +18,8 @@ from analyzer.tools import (
     get_forwarders,
     count_forwarded_messages,
     get_forward_sources,
-count_replies, get_repliers
+    count_replies, get_repliers,
+    get_editors, count_edited_messages
 )
 
 
@@ -42,7 +43,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("RankSenders", callback_data='rank_senders')],
                 [InlineKeyboardButton("RankForwarders", callback_data='rank_forwarders')],
                 [InlineKeyboardButton("ForwardSources", callback_data='forward_sources')],
-                [InlineKeyboardButton("Repliers", callback_data='rank_repliers')],
+                [InlineKeyboardButton("RankRepliers", callback_data='rank_repliers')],
+                [InlineKeyboardButton("RankEditors", callback_data='rank_editors')],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -153,6 +155,21 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 for index, (replier, count) in enumerate(repliers_ranking.items(), start=1):
                     repliers_text += f"{index}. {replier} - Replies Count: {count}\n"
                 query.message.reply_text(repliers_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'rank_editors':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                total_edited_messages = count_edited_messages(data)
+                editors_ranking = get_editors(data)
+                editors_text = f"Total edited messages: {total_edited_messages}\n\nRank of Editors:\n"
+                for index, (editor, count) in enumerate(editors_ranking.items(), start=1):
+                    editors_text += f"{index}. {editor} - Edited Messages Count: {count}\n"
+                query.message.reply_text(editors_text)
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
