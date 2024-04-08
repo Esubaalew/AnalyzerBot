@@ -67,6 +67,7 @@ from analyzer.visuals.editors import (
 
 from analyzer.visuals.forward_sources import *
 from analyzer.visuals.common_words import visualize_most_common_words
+from analyzer.visuals.active_hours import *
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -292,8 +293,13 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 hours_text = "Most active hours:\n"
                 for rank, (hour, count) in enumerate(zip(ethiopian_hours, counts), start=1):
                     hours_text += f"{rank}. {hour}: {count} Messages\n"
+                keyboard = [
+                    [InlineKeyboardButton("Visualize Hours", callback_data='visualize_hours')],
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                query.message.reply_text(hours_text, reply_markup=reply_markup, )
 
-                query.message.reply_text(hours_text)
+
 
             else:
                 query.message.reply_text("Failed to process the JSON file.")
@@ -629,6 +635,29 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
             query.message.reply_text("No JSON file found.")
+    elif query.data == 'visualize_hours':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_photo')
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                bar_chart_file = visualize_bar_hours(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(bar_chart_file, 'rb'),
+                    caption='Active hours.')
+                os.remove(bar_chart_file)
+
+                line_chart_file = visualize_line_hours(data)
+                context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=open(line_chart_file, 'rb'), )
+                os.remove(line_chart_file)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+
     else:
         query.message.reply_text("Invalid option selected.")
 

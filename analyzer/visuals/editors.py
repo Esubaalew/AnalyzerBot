@@ -32,6 +32,8 @@ def visualize_bar_chart_editors(data: dict, top_n: int = 10):
 
     plt.close()
 
+    return  file_name
+
 
 def visualize_pie_chart_editors(data: dict, top_n: int = 6):
     """
@@ -54,6 +56,7 @@ def visualize_pie_chart_editors(data: dict, top_n: int = 6):
     plt.savefig(file_name)
 
     plt.close()
+    return  file_name
 
 
 def visualize_vertical_bar_chart_editors(data: dict, top_n: int = 10):
@@ -80,6 +83,7 @@ def visualize_vertical_bar_chart_editors(data: dict, top_n: int = 10):
 
     plt.close()
 
+    return  file_name
 
 def visualize_line_chart_editors(data: dict, top_n: int = 10):
     """
@@ -107,6 +111,8 @@ def visualize_line_chart_editors(data: dict, top_n: int = 10):
     plt.savefig(file_name)
 
     plt.close()
+
+    return  file_name
 
 
 def visualize_area_chart_editors(data: dict, top_n: int = 10):
@@ -136,4 +142,6 @@ def visualize_area_chart_editors(data: dict, top_n: int = 10):
     plt.savefig(file_name)
 
     plt.close()
+
+    return file_name
 
