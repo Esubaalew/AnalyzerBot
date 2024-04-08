@@ -23,7 +23,8 @@ from analyzer.tools import (
     count_replies, get_repliers,
     get_editors, count_edited_messages,
     get_most_common_words,
-    get_most_active_hours
+    get_most_active_hours,
+get_most_active_weekdays
 )
 
 
@@ -50,7 +51,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("RankRepliers", callback_data='rank_repliers')],
                 [InlineKeyboardButton("RankEditors", callback_data='rank_editors')],
                 [InlineKeyboardButton("MostCommonWords", callback_data='most_common_words')],
-                [InlineKeyboardButton("MostActiveHours", callback_data='most_active_hours')]
+                [InlineKeyboardButton("MostActiveHours", callback_data='most_active_hours')],
+                [InlineKeyboardButton("MostActiveWeekdays", callback_data='most_active_weekdays')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -198,39 +200,40 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
 
-
     elif query.data == 'most_active_hours':
-
         file_path = context.user_data.get('file_path')
-
         if file_path:
-
             data = load_json(file_path)
-
             if data:
-
                 active_hours = get_most_active_hours(data)
-
                 hours, counts = zip(*active_hours)
-
-
-
                 ethiopian_hours = [(datetime.strptime(str(hour), '%H') + timedelta(hours=3)).strftime('%I %p') for hour
                                    in hours]
 
                 hours_text = "Most active hours:\n"
-
                 for rank, (hour, count) in enumerate(zip(ethiopian_hours, counts), start=1):
                     hours_text += f"{rank}. {hour}: {count} Messages\n"
 
                 query.message.reply_text(hours_text)
 
             else:
-
                 query.message.reply_text("Failed to process the JSON file.")
-
         else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'most_active_weekdays':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                active_weekdays = get_most_active_weekdays(data)
 
+                weekdays_text = "Most active weekdays:\n\n"
+                for weekday, count in active_weekdays:
+                    weekdays_text += f"{weekday}: {count} Messages\n"
+                query.message.reply_text(weekdays_text)
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
             query.message.reply_text("No JSON file found.")
 
     else:
