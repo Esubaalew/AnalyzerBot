@@ -9,7 +9,13 @@ from telegram.ext import (
     CallbackQueryHandler
 )
 
-from analyzer.tools import load_json, chat_info, get_oldest_message, get_latest_message
+from analyzer.tools import (
+    load_json,
+    chat_info,
+    get_oldest_message,
+    get_latest_message,
+    get_senders
+)
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -29,6 +35,7 @@ def handle_document(update: Update, context: CallbackContext) -> None:
                 [InlineKeyboardButton("Chat Information", callback_data='chat_info')],
                 [InlineKeyboardButton("Oldest Message", callback_data='oldest_message')],
                 [InlineKeyboardButton("Latest Message", callback_data='latest_message')],
+                [InlineKeyboardButton("RankSenders", callback_data='rank_senders')],
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             update.message.reply_text('Please select a functionality:', reply_markup=reply_markup)
@@ -79,6 +86,21 @@ def button_press(update: Update, context: CallbackContext) -> None:
                 latest_date = get_latest_message(data)['date']
                 formatted_date = f"{latest_date['day']}/{latest_date['month']}/{latest_date['year']}"
                 query.message.reply_text(f"The latest message in the chat was sent on {formatted_date}.")
+            else:
+                query.message.reply_text("Failed to process the JSON file.")
+        else:
+            query.message.reply_text("No JSON file found.")
+    elif query.data == 'rank_senders':
+        file_path = context.user_data.get('file_path')
+        if file_path:
+            data = load_json(file_path)
+            if data:
+                senders = get_senders(data)
+                senders_text = "Rank of Senders:\n"
+                for index, sender in enumerate(senders, start=1):
+                    senders_text += f"{index}. {sender['sender']} - Messages: {sender['messages']}\n"
+                query.message.reply_text(senders_text)
+
             else:
                 query.message.reply_text("Failed to process the JSON file.")
         else:
