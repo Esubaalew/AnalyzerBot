@@ -417,12 +417,10 @@ def get_most_active_users(data: dict, top_n: int = 10) -> list:
     user_message_count = defaultdict(int)
 
     for message in data.get('messages', []):
-
-        sender = message.get('from')
-        if sender is None:
-            sender = "Deleted Account"
-        user_message_count[sender] += 1
-
+        if 'from' in message:
+            sender = message['from']
+            sender = sender if sender is not None else 'Deleted Account'
+            user_message_count[sender] += 1
     sorted_users = sorted(user_message_count.items(), key=lambda x: x[1], reverse=True)[:top_n]
     top_active_users = [{'user': user, 'message_count': count} for user, count in sorted_users]
 
