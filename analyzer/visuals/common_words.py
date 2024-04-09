@@ -3,7 +3,7 @@ import uuid
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from analyzer.tools import get_most_common_words
+from analyzer.tools import get_most_common_words, chat_info
 
 
 def visualize_most_common_words(data: dict, top_n: int = 10):
@@ -22,7 +22,7 @@ def visualize_most_common_words(data: dict, top_n: int = 10):
     sns.barplot(x=occurrences, y=words, palette="viridis")
     plt.xlabel('Occurrences')
     plt.ylabel('Word')
-    plt.title(f'Top {top_n} Most Common Words')
+    plt.title(f'Top {top_n} Most Common Words for {chat_info(data)["name"]}')
     file_name = f"chart_{uuid.uuid4()}.png"
     plt.savefig(file_name)
     plt.close()

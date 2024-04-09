@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
 from matplotlib import pyplot as plt
-from analyzer.tools import get_most_active_hours
+from analyzer.tools import get_most_active_hours, chat_info
 
 
 def visualize_bar_hours(data: dict):
@@ -17,7 +17,7 @@ def visualize_bar_hours(data: dict):
     plt.bar(ethiopian_hours, counts, color=colors)
     plt.xlabel('Hour of the Day (Ethiopian Time)')
     plt.ylabel('Message Count')
-    plt.title('Most Active Hours in the Telegram Group')
+    plt.title(f'Most Active Hours in the {chat_info(data)["name"]}')
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -39,7 +39,7 @@ def visualize_line_hours(data: dict):
     plt.plot(ethiopian_hours, counts, marker='o', color='skyblue', linestyle='-')
     plt.xlabel('Hour of the Day')
     plt.ylabel('Message Count')
-    plt.title('Most Active Hours in the Telegram Group')
+    plt.title(f'Most Active Hours in the {chat_info(data)["name"]}')
     plt.xticks(range(24))
     plt.grid(True, linestyle='--', alpha=0.7)
     file_name = f"line_chart_{uuid.uuid4()}.png"

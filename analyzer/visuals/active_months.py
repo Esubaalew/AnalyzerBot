@@ -7,7 +7,8 @@ import numpy as np
 from analyzer.tools import (
     get_most_active_months,
     get_most_active_months_all_time,
-    get_most_active_months_by_year
+    get_most_active_months_by_year,
+chat_info
 )
 
 
@@ -29,7 +30,7 @@ def visualize_bar_chart_months(data: dict):
     plt.bar(months, message_counts, color='skyblue')
     plt.xlabel('Month')
     plt.ylabel('Message Count')
-    plt.title('Most Active Months in the Telegram Group (All Time)')
+    plt.title(f'Most Active Months in the {chat_info(data)["name"]} (All Time)')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     file_name = f"bar_chart_{uuid.uuid4()}.png"
@@ -59,7 +60,7 @@ def visualize_line_chart_months(data: dict):
     plt.plot(months, message_counts, marker='o', color='skyblue', linestyle='-')
     plt.xlabel('Month')
     plt.ylabel('Message Count')
-    plt.title('Most Active Months in the Telegram Group (All Time)')
+    plt.title(f'Most Active Months in the {chat_info(data)["name"]} (All Time)')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)
@@ -91,7 +92,7 @@ def visualize_area_chart_months(data: dict):
     plt.plot(months, message_counts, color='skyblue', alpha=0.8, marker='o', linestyle='-')
     plt.xlabel('Month')
     plt.ylabel('Message Count')
-    plt.title('Most Active Months in the Telegram Group (All Time)')
+    plt.title(f'Most Active Months in the {chat_info(data)["name"]} (All Time)')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)
@@ -120,7 +121,7 @@ def visualize_pie_chart_months(data: dict):
     plt.figure(figsize=(8, 8))
     plt.pie(message_counts, labels=months, autopct='%1.1f%%', startangle=140)
     plt.axis('equal')
-    plt.title('Most Active Months in the Telegram Group (All Time)')
+    plt.title(f'Most Active Months in the {chat_info(data)["name"]} (All Time)')
     file_name = f"pie_chart_{uuid.uuid4()}.png"
 
     plt.savefig(file_name)
@@ -140,7 +141,7 @@ def visualize_most_active_months_trend(data: dict):
     plt.plot(months, message_counts, marker='o', color='skyblue', linestyle='-')
     plt.xlabel('Month')
     plt.ylabel('Message Count')
-    plt.title('Trend of Most Active Months in the Telegram Group (Monthly)')
+    plt.title(f'Trend of Most Active Months in the {chat_info(data)["name"]} (Monthly)')
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.grid(True)
@@ -165,7 +166,7 @@ def visualize_top_10_most_active_months(data: dict):
     bars = ax.bar(top_10_months, top_10_message_counts, color=colors)
     ax.set_xlabel('Month')
     ax.set_ylabel('Message Count')
-    ax.set_title('Top 10 Most Active Months in the Telegram Group')
+    ax.set_title(f'Top 10 Most Active Months in the {chat_info(data)["name"]}')
     plt.xticks(rotation=45)
 
     # Add a color bar
@@ -218,7 +219,7 @@ def visualize_most_active_months_by_year(data: dict):
 
     plt.xlabel('Month')
     plt.ylabel('Message Count')
-    plt.title('Most Active Months by Year')
+    plt.title(f'Most Active Months by Year for {chat_info(data)["name"]}')
     plt.xticks(index + bar_width * len(years) / 2, month_names)
     plt.legend(title='Year')
     plt.tight_layout()

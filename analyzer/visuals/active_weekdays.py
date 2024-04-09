@@ -3,7 +3,7 @@ import uuid
 
 from matplotlib import pyplot as plt
 
-from analyzer.tools import get_most_active_weekdays
+from analyzer.tools import get_most_active_weekdays, chat_info
 
 
 def visualize_most_active_weekdays_bar(data: dict):
@@ -16,7 +16,7 @@ def visualize_most_active_weekdays_bar(data: dict):
     plt.bar(weekdays, message_counts, color='skyblue')
     plt.xlabel('Weekday')
     plt.ylabel('Message Count')
-    plt.title('Most Active Weekdays in the Telegram Group')
+    plt.title(f'Most Active Weekdays in the {chat_info(data)["name"]}')
     plt.xticks(rotation=45)
     plt.tight_layout()
 
@@ -38,7 +38,7 @@ def visualize_most_active_weekdays_pie(data: dict):
     plt.figure(figsize=(8, 8))
     plt.pie(message_counts, labels=weekdays, autopct='%1.1f%%', startangle=140)
     plt.axis('equal')
-    plt.title('Most Active Weekdays in the Telegram Group')
+    plt.title(f'Most Active Weekdays in the {chat_info(data)["name"]}')
 
     file_name = f"bar_chart_{uuid.uuid4()}.png"
 

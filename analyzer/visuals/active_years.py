@@ -2,7 +2,7 @@ import uuid
 
 from matplotlib import pyplot as plt
 
-from analyzer.tools import get_most_active_year
+from analyzer.tools import get_most_active_year, chat_info
 
 
 def visualize_message_trend_over_year(data: dict):
@@ -19,7 +19,7 @@ def visualize_message_trend_over_year(data: dict):
 
     plt.figure(figsize=(10, 5))
     plt.plot(years, message_counts, marker='o')
-    plt.title('Number of Messages Over Time')
+    plt.title(f'Number of Messages Over Time for {chat_info(data)["name"]}')
     plt.xlabel('Year')
     plt.ylabel('Number of Messages')
     plt.grid(True)
@@ -48,7 +48,7 @@ def visualize_message_trend_over_year_bar(data: dict):
 
     plt.figure(figsize=(10, 5))
     plt.bar(years, message_counts, color='skyblue')
-    plt.title('Number of Messages Over Years')
+    plt.title(f'Number of Messages Over Years for {chat_info(data)["name"]}')
     plt.xlabel('Year')
     plt.ylabel('Number of Messages')
     plt.xticks(rotation=45)

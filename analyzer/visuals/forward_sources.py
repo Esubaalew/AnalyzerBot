@@ -3,7 +3,7 @@ import uuid
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from analyzer.tools import get_forward_sources
+from analyzer.tools import get_forward_sources, chat_info
 
 
 def visualize_bar_chart_sources(data: dict, top_n: int = 10):
@@ -25,7 +25,7 @@ def visualize_bar_chart_sources(data: dict, top_n: int = 10):
     sns.barplot(x=message_counts, y=top_forward_sources, palette="viridis")
     plt.xlabel('Message Count')
     plt.ylabel('Forward Source')
-    plt.title(f'Top {top_n} Forward Sources by Message Count')
+    plt.title(f'Top {top_n} Forward Sources by Message Count for {chat_info(data)["name"]}')
     file_name = f"v_chart_{uuid.uuid4()}.png"
     plt.savefig(file_name)
     plt.close()
@@ -46,7 +46,7 @@ def visualize_pie_chart_sources(data: dict, top_n: int = 6):
 
     plt.figure(figsize=(8, 8))
     plt.pie(message_counts, labels=top_forward_sources, autopct='%1.1f%%', startangle=140, colors=plt.cm.tab20.colors)
-    plt.title(f'Proportion of Messages Forwarded by Top {top_n} Forward Sources')
+    plt.title(f'Proportion of Messages Forwarded by Top {top_n} Forward Sources for {chat_info(data)["name"]}')
     plt.axis('equal')
     file_name = f"pie_chart_{uuid.uuid4()}.png"
     plt.savefig(file_name)
@@ -71,7 +71,7 @@ def visualize_vertical_bar_chart_sources(data: dict, top_n: int = 10):
     sns.barplot(x=top_forward_sources, y=message_counts, palette="viridis")
     plt.xlabel('Forward Source')
     plt.ylabel('Message Count')
-    plt.title(f'Top {top_n} Forward Sources by Message Count')
+    plt.title(f'Top {top_n} Forward Sources by Message Count for {chat_info(data)["name"]}')
     file_name = f"line_chart_{uuid.uuid4()}.png"
     plt.savefig(file_name)
     plt.close()
@@ -95,7 +95,7 @@ def visualize_line_chart_sources(data: dict, top_n: int = 10):
     plt.plot(top_forward_sources, message_counts, marker='o', color='skyblue', linestyle='-')
     plt.xlabel('Forward Source')
     plt.ylabel('Message Count')
-    plt.title(f'Top {top_n} Forward Sources (Line Chart)')
+    plt.title(f'Top {top_n} Forward Sources (Line Chart) for {chat_info(data)["name"]}')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)
@@ -123,7 +123,7 @@ def visualize_area_chart_sources(data: dict, top_n: int = 10):
     plt.plot(top_forward_sources, message_counts, color='skyblue', alpha=0.8, marker='o', linestyle='-')
     plt.xlabel('Forward Source')
     plt.ylabel('Message Count')
-    plt.title(f'Top {top_n} Forward Sources (Area Chart)')
+    plt.title(f'Top {top_n} Forward Sources (Area Chart) for {chat_info(data)["name"]}')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)

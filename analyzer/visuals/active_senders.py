@@ -3,7 +3,7 @@ import uuid
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from analyzer.tools import get_most_active_users, get_senders
+from analyzer.tools import get_most_active_users, get_senders, chat_info
 
 
 def visualize_bar_chart(data: dict, top_n: int = 10):
@@ -24,7 +24,7 @@ def visualize_bar_chart(data: dict, top_n: int = 10):
     sns.barplot(x=message_counts, y=users, palette="viridis")
     plt.xlabel('Message Count')
     plt.ylabel('User')
-    plt.title(f'Top {top_n} Most Active Users')
+    plt.title(f'Top {top_n} Most Active Users of {chat_info(data)["name"]}')
 
     # Generate a unique file name
     file_name = f"bar_chart_{uuid.uuid4()}.png"
@@ -53,7 +53,7 @@ def visualize_pie_chart(data: dict, top_n: int = 10):
 
     plt.figure(figsize=(8, 8))
     plt.pie(message_counts, labels=senders, autopct='%1.1f%%', startangle=140, colors=plt.cm.tab20.colors)
-    plt.title(f'Proportion of Messages Sent by Top {top_n} Senders')
+    plt.title(f'Proportion of Messages Sent by Top {top_n} Senders for {chat_info(data)["name"]}')
     plt.axis('equal')
 
     file_name = f"bar_chart_{uuid.uuid4()}.png"
@@ -83,11 +83,11 @@ def visualize_vertical_chart(data: dict, top_n: int = 10):
     sns.barplot(x=users, y=message_counts, palette="viridis")
     plt.xlabel('Message Count')
     plt.ylabel('User')
-    plt.title(f'Top {top_n} Most Active Users')
-    # Generate a unique file name
+    plt.title(f'Top {top_n} Most Active Users for {chat_info(data)["name"]}')
+
     file_name = f"bar_chart_{uuid.uuid4()}.png"
 
-    # Save the plot as an image file
+
     plt.savefig(file_name)
 
     plt.close()
@@ -113,14 +113,14 @@ def visualize_line__chart(data: dict, top_n: int = 10):
     plt.plot(users, message_counts, marker='o', color='skyblue', linestyle='-')
     plt.xlabel('User')
     plt.ylabel('Message Count')
-    plt.title(f'Top {top_n} Most Active Users (Line Chart)')
+    plt.title(f'Top {top_n} Most Active Users (Line Chart) for {chat_info(data)["name"]}')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)
-    # Generate a unique file name
+
     file_name = f"bar_chart_{uuid.uuid4()}.png"
 
-    # Save the plot as an image file
+
     plt.savefig(file_name)
 
     plt.close()
@@ -147,7 +147,7 @@ def visualize_area_chart(data: dict, top_n: int = 10):
     plt.plot(users, message_counts, color='skyblue', alpha=0.8, marker='o', linestyle='-')
     plt.xlabel('User')
     plt.ylabel('Message Count')
-    plt.title(f'Top {top_n} Most Active Users (Area Chart)')
+    plt.title(f'Top {top_n} Most Active Users (Area Chart) for {chat_info(data)["name"]}')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.grid(True)
