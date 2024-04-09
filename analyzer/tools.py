@@ -193,7 +193,8 @@ def get_forwarders(data: dict) -> dict:
             forwarder = forwarder if forwarder is not None else 'Deleted Account'
             forwarder_count[forwarder] += 1
 
-    forwarder_ranking = dict(sorted(forwarder_count.items(), key=lambda x: x[1], reverse=True))
+    sorted_forwarders = sorted(forwarder_count.items(), key=lambda x: x[1], reverse=True)[:100]
+    forwarder_ranking = dict(sorted_forwarders)
     return forwarder_ranking
 
 
@@ -217,9 +218,10 @@ def get_forward_sources(data: dict) -> dict:
             forward_source = forward_source if forward_source is not None else 'Deleted Account'
             forward_sources_count[forward_source] += 1
 
-    sorted_forward_sources_count = dict(sorted(forward_sources_count.items(), key=lambda x: x[1], reverse=True))
+    sorted_forward_sources = sorted(forward_sources_count.items(), key=lambda x: x[1], reverse=True)[:100]
+    forward_sources_count = dict(sorted_forward_sources)
 
-    return sorted_forward_sources_count
+    return forward_sources_count
 
 
 def count_replies(data: dict) -> int:
@@ -277,7 +279,8 @@ def get_repliers(data: dict) -> dict:
         if 'reply_to_message_id' in message:
             replier_count[replier] += 1
 
-    replier_ranking = dict(sorted(replier_count.items(), key=lambda x: x[1], reverse=True))
+    sorted_repliers = sorted(replier_count.items(), key=lambda x: x[1], reverse=True)[:100]
+    replier_ranking = dict(sorted_repliers)
     return replier_ranking
 
 
@@ -338,7 +341,8 @@ def get_editors(data: dict) -> dict:
                 editor = 'Deleted Account'
             editor_count[editor] += 1
 
-    editor_ranking = dict(sorted(editor_count.items(), key=lambda x: x[1], reverse=True))
+    sorted_editors = sorted(editor_count.items(), key=lambda x: x[1], reverse=True)[:100]
+    editor_ranking = dict(sorted_editors)
     return editor_ranking
 
 

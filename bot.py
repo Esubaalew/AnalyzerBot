@@ -238,7 +238,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             data = load_json(file_path)
             if data:
                 senders = get_senders(data)[:100]
-                senders_text = "Rank of Senders:\n"
+                senders_text = "Rank of Top 100 Senders:\n"
                 for index, sender in enumerate(senders, start=1):
                     senders_text += f"{index}. {sender['sender']} - Messages: {sender['messages']}\n"
                 keyboard = [
@@ -258,7 +258,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             if data:
                 all_forwarders = count_forwarded_messages(data)
                 forwarders = get_forwarders(data)
-                forwarders_text = "Rank of Forwarders:\n"
+                forwarders_text = "Rank of Top 100 Forwarders:\n"
                 for index, (forwarder, count) in enumerate(forwarders.items(), start=1):
                     forwarders_text += f"{index}. {forwarder} - Forwarded Messages: {count}\n"
                 reply_text = f"Total forwarded messages: {all_forwarders}\n\n{forwarders_text}"
@@ -278,7 +278,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             data = load_json(file_path)
             if data:
                 forward_sources = get_forward_sources(data)
-                forward_sources_text = "Rank of Forward Sources:\n"
+                forward_sources_text = "Rank of Top 100 Forward Sources:\n"
                 for index, (forward_source, count) in enumerate(forward_sources.items(), start=1):
                     forward_sources_text += f"{index}. {forward_source} - Forwarded Messages: {count}\n"
                 keyboard = [
@@ -298,7 +298,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             if data:
                 total_repliers = count_replies(data)
                 repliers_ranking = get_repliers(data)
-                repliers_text = f"Total replies: {total_repliers}\n\nRank of Repliers:\n"
+                repliers_text = f"Total replies: {total_repliers}\n\nRank of Top 100 Repliers:\n"
                 for index, (replier, count) in enumerate(repliers_ranking.items(), start=1):
                     repliers_text += f"{index}. {replier} - Replies Count: {count}\n"
 
@@ -319,7 +319,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             if data:
                 total_edited_messages = count_edited_messages(data)
                 editors_ranking = get_editors(data)
-                editors_text = f"Total edited messages: {total_edited_messages}\n\nRank of Editors:\n"
+                editors_text = f"Total edited messages: {total_edited_messages}\n\nRank of Top 100 Editors:\n"
                 for index, (editor, count) in enumerate(editors_ranking.items(), start=1):
                     editors_text += f"{index}. {editor} - Edited Messages Count: {count}\n"
 
