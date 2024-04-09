@@ -130,10 +130,9 @@ def get_senders(data: dict) -> list:
     sender_count = defaultdict(int)
 
     for message in data.get('messages', []):
-        sender = message.get('from')
-        if sender is None:
-            sender_count['Deleted Account'] += 1
-        else:
+        if 'from' in message:
+            sender = message['from']
+            sender = sender if sender is not None else 'Deleted Account'
             sender_count[sender] += 1
 
     senders_ranked = [{'sender': sender, 'messages': count} for sender, count in
