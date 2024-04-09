@@ -148,6 +148,7 @@ def filter_poll(update: Update, context: CallbackContext) -> None:
 
 
 def handle_document(update: Update, context: CallbackContext) -> None:
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
     document = update.message.document
     if document.file_size > 20971520:
         update.message.reply_text("The file size exceeds the limit. Please upload a file smaller than 20 MB.")
@@ -190,8 +191,8 @@ def handle_document(update: Update, context: CallbackContext) -> None:
 def button_press(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     query.answer()
-    file_names = []
     if query.data == 'chat_info':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -209,6 +210,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'oldest_message':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -221,6 +223,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'latest_message':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -233,6 +236,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'rank_senders':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -252,6 +256,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'rank_forwarders':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -273,6 +278,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'forward_sources':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -292,6 +298,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'rank_repliers':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -313,6 +320,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'rank_editors':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -335,6 +343,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             query.message.reply_text("No JSON file found.")
 
     elif query.data == 'most_common_words':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -357,6 +366,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             query.message.reply_text("No JSON file found.")
 
     elif query.data == 'most_active_hours':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -380,6 +390,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'most_active_weekdays':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -400,6 +411,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
         else:
             query.message.reply_text("No JSON file found.")
     elif query.data == 'most_active_months':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -423,6 +435,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             query.message.reply_text("No JSON file found.")
 
     elif query.data == 'most_active_year':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -447,6 +460,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             query.message.reply_text("No JSON file found.")
 
     elif query.data == 'most_active_months_all_time':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
@@ -468,6 +482,7 @@ def button_press(update: Update, context: CallbackContext) -> None:
             query.message.reply_text("No JSON file found.")
 
     elif query.data == 'most_active_months_by_year':
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         file_path = context.user_data.get('file_path')
         if file_path:
             data = load_json(file_path)
