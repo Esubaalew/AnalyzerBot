@@ -102,9 +102,10 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def help(update: Update, context: CallbackContext) -> None:
-    message = "Go to your any  telegram group on your desktop and export the chat history as a JSON file. " \
-              "Then send the JSON file to the bot and choose the functionality you want to perform."
-    update.message.reply_text(message)
+    message = ("Go to any of your **Telegram groups** or *personal chats* on your desktop, and export the chat history "
+               "as a JSON file\\. "
+               "Then, send the JSON file to the bot and choose the functionality you want to perform\\.")
+    update.message.reply_text(message, parse_mode='MarkdownV2')
 
 
 def unknown_command(update: Update, context: CallbackContext) -> None:
@@ -145,6 +146,11 @@ def filter_sticker(update: Update, context: CallbackContext) -> None:
 
 def filter_poll(update: Update, context: CallbackContext) -> None:
     update.message.reply_text("A poll? Please send a JSON file instead.")
+
+
+def visualize(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text("Please send a JSON file to visualize the data. You can export the chat history as a "
+                              "JSON file from your Telegram desktop.")
 
 
 def handle_document(update: Update, context: CallbackContext) -> None:
@@ -875,6 +881,7 @@ def main() -> None:
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('help', help))
+    dispatcher.add_handler(CommandHandler('visualize', visualize))
     dispatcher.add_handler(MessageHandler(Filters.document, handle_document))
     dispatcher.add_handler(MessageHandler(Filters.photo, filter_photos))
     dispatcher.add_handler(MessageHandler(Filters.video, filter_videos))
