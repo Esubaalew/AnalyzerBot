@@ -9,6 +9,7 @@ AnalyzerBot is a Telegram chat analysis bot designed to process and visualize da
 - [Usage](#usage)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
+- [Demo](#demo)
 
 ## Features
 
@@ -71,3 +72,8 @@ Contributions are welcome! To contribute:
 2. Create a new branch for your feature or bug fix.
 3. Commit your changes and push the branch.
 4. Open a pull request describing your changes.
+
+
+## Demo
+
+Try out AnalyzerBot directly on Telegram: [LiyuBot](https://t.me/liyurobot)
