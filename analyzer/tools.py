@@ -370,10 +370,19 @@ def get_longest_messages(data: dict) -> list:
 
     return longest_messages
 
+def get_stopwords(filepath="stopwords.txt"):
+    """
+    Reads stop words from a file and returns them as a set.
+    """
+    with open(filepath, "r") as file:
+        stopwords = file.read().splitlines()
+    return set(stopwords)
+
 
 def get_most_common_words(data: dict, top_n=10) -> list:
     """
-    Get the top N most common single words in the text key of messages
+    Get the top N most common single words in the text key of messages,
+    excluding stop words.
 
     Args:
     - data (dict): The JSON data.
@@ -382,21 +391,28 @@ def get_most_common_words(data: dict, top_n=10) -> list:
     Returns:
     - most_common_words (list): List of dictionaries containing the top N most common single words along with their occurrences.
     """
+    
+    stop_words = get_stopwords() 
+
     words_count = Counter()
 
     for message in data.get('messages', []):
-
+        
         text = message.get('text', '')
         if isinstance(text, list):
             text = ' '.join(str(item) for item in text if isinstance(item, str))
         elif isinstance(text, dict):
-
             text = str(text)
 
+        
         words = re.findall(r'\b\w+\b', text.lower())
-        words_count.update(words)
+        filtered_words = [word for word in words if word not in stop_words]
+        words_count.update(filtered_words)
 
+    
     most_common_words = words_count.most_common(top_n)
+
+    
     top_words_list = []
     for word, count in most_common_words:
         top_words_list.append({'word': word, 'occurrence': count})
