@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections import Counter
 import re
 from typing import Any, List, Tuple
-
+from nltk.corpus import stopwords
 
 def load_json(file_path: str = 'result.json') -> Any | None:
     """
@@ -370,14 +370,15 @@ def get_longest_messages(data: dict) -> list:
 
     return longest_messages
 
-def get_stopwords(filepath="stopwords.txt"):
-    """
-    Reads stop words from a file and returns them as a set.
-    """
-    with open(filepath, "r") as file:
-        stopwords = file.read().splitlines()
-    return set(stopwords)
 
+import nltk
+nltk.download('stopwords')
+
+def get_stopwords():
+    """
+    Returns a set of stop words using NLTK's stopwords corpus.
+    """
+    return set(stopwords.words('english'))
 
 def get_most_common_words(data: dict, top_n=10) -> list:
     """
@@ -391,28 +392,24 @@ def get_most_common_words(data: dict, top_n=10) -> list:
     Returns:
     - most_common_words (list): List of dictionaries containing the top N most common single words along with their occurrences.
     """
-    
-    stop_words = get_stopwords() 
+    stop_words = get_stopwords()
 
     words_count = Counter()
 
     for message in data.get('messages', []):
-        
+
         text = message.get('text', '')
         if isinstance(text, list):
             text = ' '.join(str(item) for item in text if isinstance(item, str))
         elif isinstance(text, dict):
             text = str(text)
 
-        
-        words = re.findall(r'\b\w+\b', text.lower())
+        words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
         filtered_words = [word for word in words if word not in stop_words]
         words_count.update(filtered_words)
 
-    
     most_common_words = words_count.most_common(top_n)
 
-    
     top_words_list = []
     for word, count in most_common_words:
         top_words_list.append({'word': word, 'occurrence': count})
@@ -437,6 +434,7 @@ def get_most_active_users(data: dict, top_n: int = 10) -> list:
             sender = message['from']
             sender = sender if sender is not None else 'Deleted Account'
             user_message_count[sender] += 1
+
     sorted_users = sorted(user_message_count.items(), key=lambda x: x[1], reverse=True)[:top_n]
     top_active_users = [{'user': user, 'message_count': count} for user, count in sorted_users]
 
